@@ -1,0 +1,42 @@
+name: Update SwiftKey APK
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # اجرای هفتگی در یکشنبه ساعت 00:00 به وقت UTC
+  workflow_dispatch:  # امکان اجرای دستی
+
+jobs:
+  update-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Download APK
+      run: |
+        echo "Downloading APK from Farsroid..."
+        # لینک مستقیم فایل APK مربوط به مود v8a (این لینک را در صورت نیاز تغییر دهید)
+        APK_URL="https://www.farsroid.com/files/swiftkey-keyboard_v8a.apk"
+        curl -L -o swiftkey.apk "$APK_URL"
+
+    - name: Commit changes if APK updated
+      id: commit_step
+      run: |
+        git config --local user.name "GitHub Action"
+        git config --local user.email "action@github.com"
+        git add swiftkey.apk
+        if ! git diff --cached --quiet; then
+          git commit -m "Automatically updated SwiftKey APK"
+          git push
+          echo "::set-output name=updated::true"
+        else
+          echo "No changes in APK file. Skipping commit."
+          echo "::set-output name=updated::false"
+        fi
+
+    - name: Create GitHub Release
+      if: steps.commit_step.outputs.updated == 'true'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: swiftkey.apk
