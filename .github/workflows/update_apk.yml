@@ -17,7 +17,7 @@ jobs:
       run: |
         echo "Downloading APK from Farsroid..."
         # لینک مستقیم فایل APK مربوط به مود v8a:
-        APK_URL="https://www.farsroid.com/files/swiftkey-keyboard_v8a.apk"
+        APK_URL="https://www.dl.farsroid.com/ap/SwiftKey-Keyboard-9.10.23.20-Mod-Arm64-v8a(FarsRoid.Com).apk"
         curl -L -o swiftkey.apk "$APK_URL"
 
     - name: Commit changes if APK updated
