@@ -3,7 +3,7 @@ name: Update SwiftKey APK
 on:
   schedule:
     - cron: '0 0 * * 0'  # اجرای هفتگی در یکشنبه ساعت 00:00 به وقت UTC
-  workflow_dispatch:  # امکان اجرای دستی
+  workflow_dispatch:      # امکان اجرای دستی
 
 jobs:
   update-apk:
@@ -16,7 +16,7 @@ jobs:
     - name: Download APK
       run: |
         echo "Downloading APK from Farsroid..."
-        # لینک مستقیم فایل APK مربوط به مود v8a (این لینک را در صورت نیاز تغییر دهید)
+        # لینک مستقیم فایل APK مربوط به مود v8a:
         APK_URL="https://www.farsroid.com/files/swiftkey-keyboard_v8a.apk"
         curl -L -o swiftkey.apk "$APK_URL"
 
@@ -28,11 +28,12 @@ jobs:
         git add swiftkey.apk
         if ! git diff --cached --quiet; then
           git commit -m "Automatically updated SwiftKey APK"
-          git push
-          echo "::set-output name=updated::true"
+          # استفاده از روش push با تعیین توکن
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.ref }}
+          echo "updated=true" >> $GITHUB_OUTPUT
         else
           echo "No changes in APK file. Skipping commit."
-          echo "::set-output name=updated::false"
+          echo "updated=false" >> $GITHUB_OUTPUT
         fi
 
     - name: Create GitHub Release
